@@ -3,29 +3,33 @@
 @AGENTS.md
 
 Follow the shared `AGENTS.md` and `WORKFLOW.md` contract. Claude Code is a thin
-transport. The root Claude session is the coordinator (see `agents/coordinator.md`)
+transport. The root Claude session is the coordinator (see `.context-circuit/agents/coordinator.md`)
 for all normal conversation: orientation, context gathering, planning, review,
 approval interpretation, direct collaboration, completion, archive/restore, and
 delivery discussion.
 
-A Claude Task/subagent maps only to the single bounded worker (`agents/worker.md`)
-for an execution or direct-collaboration session, or the independent read-only
-verifier (`agents/verifier.md`) for one execution.
+A Claude Task/subagent maps only to the single bounded worker (`.context-circuit/agents/worker.md`)
+for an execution or direct-collaboration session, the independent read-only
+verifier (`.context-circuit/agents/verifier.md`) for one execution, or the planner
+(`.context-circuit/agents/planner.md`) after intent approval.
 Record provider-neutral `host_evidence` for the child; a host permission flag is
 an observation, not authorization.
 
 ## Applying per-role model & effort
 
 When `role-tiering.local.yaml` configures a `(model, effort)` for a role (see
-`docs/role-tiering.md`), read the group for this host from `hosts.claude-code`
-and apply it — which on Claude Code means **setting it on the spawn, not just
-recording it**. Concretely:
+`.context-circuit/docs/role-tiering.md`), read the file from the workspace root (next to
+`repositories.local.yaml`), never from a Task working directory, then read the
+group for this host from `hosts.claude-code` and apply it — which on Claude Code
+means **setting it on the spawn, not just recording it**. A missing file in an
+isolated working copy is not an absent config. Concretely:
 
 - **Model — set it on the spawn.** Pass the role's configured model id to the
   worker's or verifier's `Task`/subagent spawn as its `model` parameter. A child
   launched without a `model` inherits the coordinator's session model, so an unset
   spawn is the whole tier being silently ignored. Set the worker's `model` from the
-  `worker` entry and the verifier's from the `verifier` entry before launching.
+  `worker` entry, the verifier's from the `verifier` entry, and the planner's from
+  the `planner` entry before launching.
 - **Effort — session-level on this host; not per-child.** The `Task`/subagent
   spawn exposes no per-child effort control, so a worker and a verifier launched
   in the same session cannot run at different efforts here. Record the configured
@@ -46,17 +50,22 @@ are host-local. They never replace a human approval or completion gate and never
 enter workspace state. If Task/subagent creation is unavailable, report
 `host-blocked` and keep the route read-only; never self-verify.
 
-## Optional: slash-invocation of skills
+## Host-native routes
 
-Product skills ship only at `.agents/skills/<name>/SKILL.md`, and the coordinator
-resolves them by path (see INV-SKILL-01). Claude Code does not discover
-`.agents/skills/`, so to also invoke a skill directly — for example
-`/cc-execute plan 0078` — create per-skill symlinks under `.claude/skills/` once:
+Claude discovers Context Circuit child roles, standing rules, and slash skills
+through the committed `.claude/` tree. Those files are thin routes, not a second
+policy:
 
-    mkdir -p .claude/skills && for d in .agents/skills/*/; do ln -s "../../$d" ".claude/skills/$(basename "$d")"; done
+- Agents: `.claude/agents/{worker,verifier,planner}.md` → Read
+  `.context-circuit/agents/<role>.md`
+- Rules: `.claude/rules/` → owning invariants (role-tiering spawn, commit
+  convention) and this file where the host requires it
+- Skills: `.claude/skills/cc-*/SKILL.md` are thin routes. Read
+  `.agents/skills/<name>/SKILL.md` — that file is the owner (INV-SKILL-01).
+  Do not copy the skill body into the Claude tree. The coordinator still
+  resolves skills by path; the Claude skills tree is how `/cc-*` is discovered.
 
-`.claude/` is host-local: it is never part of workspace or shipped state and an
-upgrade neither creates nor preserves it. Re-run the command after an upgrade
-that adds or renames a skill; remove any dangling links for skills an upgrade
-dropped. This is a host convenience only — it grants no route, role, or authority
-that the read-as-procedure path does not already carry.
+`.claude/` is committed workspace integration. Personal Claude state
+(`~/.claude/`, `.claude/settings.local.json`, transcripts, credentials) stays
+host-local and never enters workspace state. Native folders grant no route,
+role, or authority that the read-as-procedure path does not already carry.
