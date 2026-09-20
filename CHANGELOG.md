@@ -1,5 +1,38 @@
 # Changelog
 
+## v2.1.0 — 2026-09-20
+
+
+# v2.1.0
+
+A workspace can now install its CLI from the registry it was published from,
+rather than only from the public repository.
+
+## The cc-cli skill reads the workspace's registry
+
+`workspace.yaml` accepts an optional `cli_registry` naming the `source`,
+`repository` and `api` this workspace installs from. The cc-cli skill reads it
+before installing and passes those values to the installer; a workspace without
+the key installs from the public GitHub release exactly as before.
+
+The skill no longer describes the product repository as the only place a CLI can
+come from, and it is explicit that a registry must be read rather than guessed —
+a wrong host is not a failed install but a request for a binary sent somewhere
+nobody chose.
+
+## Installers accept a registry
+
+The bundled `install.sh` and `install.ps1` accept `--source github|gitlab` with
+`--repo` and `--api` (`-Source`, `-Repo`, `-Api`), or the environment variables
+`CONTEXT_CIRCUIT_SOURCE`, `CONTEXT_CIRCUIT_REPO` and `CONTEXT_CIRCUIT_API`. A
+`gitlab` registry resolves the release through the GitLab API, downloads each
+asset from the generic package registry, and requires an access token, because
+no anonymous download path exists to fall back to.
+
+Checksum verification, the version check against the downloaded binary, side-by-
+side version storage and offline `--archive` installation are unchanged and
+apply to every registry.
+
 ## v2.0.0 — 2026-09-19
 
 
