@@ -1,5 +1,18 @@
 # Changelog
 
+## v2.2.0 — 2026-09-23
+
+
+# v2.2.0
+
+Developers can request a grounded plan directly, without creating an intent.
+Every new plan uses a folder with `plan.md` as its entry and optional detail
+files for contracts, diagrams, schema, UI structure, or other useful design.
+The entry links every detail and assigns shared or repository-specific reading.
+After the complete plan is presented, a separate execution request starts work.
+The workspace pins CLI 2.2.0, which understands these folders and continues to
+read legacy single-file plans.
+
 ## v2.1.0 — 2026-09-20
 
 
