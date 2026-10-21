@@ -126,7 +126,7 @@ from a tagged Context Circuit release:
 ```sh
 npx tembiter init \
   --template https://github.com/kaotypr/context-circuit.git \
-  --tag v2.4.0 \
+  --tag v2.4.1 \
   --target acme-workspace
 
 cd acme-workspace
