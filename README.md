@@ -9,8 +9,10 @@
 </p>
 
 <!-- Each product's release badge reads the repository that publishes it: the
-     template here, the CLI where its source is built. Date ordering avoids a
-     semver sort that cannot parse a prefixed tag. -->
+     template here, the CLI where its source is built. Publication fills the
+     release badges and links, and the license link, for the forge that
+     published this template. On GitHub, date ordering avoids a semver sort that
+     cannot parse a prefixed tag. -->
 <p align="center">
   <a href="https://github.com/kaotypr/context-circuit/releases"><img alt="Workspace template release" src="https://img.shields.io/github/v/release/kaotypr/context-circuit?filter=v*&display_name=tag&include_prereleases&sort=date&label=workspace&color=1f6feb"></a>
   <a href="https://github.com/kaotypr/context-circuit-source/releases"><img alt="CLI release" src="https://img.shields.io/github/v/release/kaotypr/context-circuit-source?filter=cli-v*&display_name=tag&include_prereleases&sort=date&label=cli&color=1f6feb"></a>
@@ -126,7 +128,7 @@ from a tagged Context Circuit release:
 ```sh
 npx tembiter init \
   --template https://github.com/kaotypr/context-circuit.git \
-  --tag v2.4.1 \
+  --tag v2.5.0-rc.1 \
   --target acme-workspace
 
 cd acme-workspace
